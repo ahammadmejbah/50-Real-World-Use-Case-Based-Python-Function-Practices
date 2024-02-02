@@ -940,4 +940,86 @@ suggest_crop("Loamy", 500, "Spring")
 ```             
 When we run the function `suggest_crop("Loamy", 500, "Spring")` in the example that has been supplied, it searches for crops that are suited for loamy soil, have an annual rainfall need that falls between 300 and 600 millimeters, and may be planted during the spring season. The function determines if "Wheat" is an appropriate crop that meets these requirements and then provides the specifics of that crop.  
                                                  
-                                                   
+  
+             
+# 10. Use Case: Medical Records Management System
+
+Develop a Python function to manage medical records by creating, updating, and retrieving patient information. The system will store patient data, including name, age, gender, and medical history.
+
+```python
+class MedicalRecord:
+    def __init__(self, name, age, gender, medical_history=None):
+        """
+        Initialize a MedicalRecord object.
+
+        Parameters:
+        - name (str): Name of the patient.
+        - age (int): Age of the patient.
+        - gender (str): Gender of the patient.
+        - medical_history (str, optional): Medical history of the patient (default is None).
+        """
+        self.name = name
+        self.age = age
+        self.gender = gender
+        self.medical_history = medical_history if medical_history else "No medical history available."
+
+def create_medical_record(name, age, gender, medical_history=None):
+    """
+    Create a new medical record for a patient.
+
+    Parameters:
+    - name (str): Name of the patient.
+    - age (int): Age of the patient.
+    - gender (str): Gender of the patient.
+    - medical_history (str, optional): Medical history of the patient (default is None).
+
+    Returns:
+    - MedicalRecord: Object representing the medical record.
+    """
+    return MedicalRecord(name, age, gender, medical_history)
+
+def update_medical_history(medical_record, new_medical_history):
+    """
+    Update the medical history of a patient.
+
+    Parameters:
+    - medical_record (MedicalRecord): MedicalRecord object to be updated.
+    - new_medical_history (str): New medical history information.
+
+    Returns:
+    - None
+    """
+    medical_record.medical_history = new_medical_history
+
+def retrieve_patient_info(medical_record):
+    """
+    Retrieve patient information from a medical record.
+
+    Parameters:
+    - medical_record (MedicalRecord): MedicalRecord object.
+
+    Returns:
+    - dict: Dictionary containing patient information (name, age, gender, medical_history).
+    """
+    return {
+        "name": medical_record.name,
+        "age": medical_record.age,
+        "gender": medical_record.gender,
+        "medical_history": medical_record.medical_history
+    }
+
+# Example Usage:
+patient1 = create_medical_record("John Doe", 35, "Male", "Hypertension, Allergies")
+print("Patient Information (Before Update):", retrieve_patient_info(patient1))
+
+update_medical_history(patient1, "Hypertension, Allergies, Diabetes")
+print("Patient Information (After Update):", retrieve_patient_info(patient1))
+```
+
+#### Step-by-Step Explanation:
+   - `MedicalRecord`: A class to represent a patient's medical record, with attributes such as name, age, gender, and medical history.
+   - `__init__` method: Initializes a MedicalRecord object with provided parameters. If no medical history is provided, it defaults to "No medical history available."
+   - `create_medical_record`: Takes patient information as input and returns a new `MedicalRecord` object.
+   - `update_medical_history`: Takes a `MedicalRecord` object and new medical history information, updates the medical history attribute.
+   - `retrieve_patient_info`: Takes a `MedicalRecord` object and returns a dictionary containing patient information (name, age, gender, medical_history).
+   - Create a medical record for a patient, print the patient information before and after updating the medical history.             

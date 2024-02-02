@@ -394,18 +394,550 @@ avg_ratings, monthly_avg_ratings = analyze_feedback_data(feedback_data)
 
 The average ratings give a quick snapshot of the restaurant's performance in different areas. The monthly averages help to understand how customer perceptions have changed over time, highlighting any improvements or declines in different aspects of the dining experience. This information is vital for the restaurant to identify areas needing improvement and to track the effectiveness of any changes made.
   
+# 4. Use Case: Analyzing Customer Feedback for Retail Store
+
+#### Step 1: Data Creation
+- Customer ID: A unique identifier for each customer.
+- Rating: A numerical rating from 1 (very dissatisfied) to 5 (very satisfied).
+- Comment: A text comment about their shopping experience.
+
+#### Step 2: Analysis Function
+1. Calculate the average rating to assess overall customer satisfaction.
+2. Perform a simple text analysis to identify the most common words in the comments, which can help identify common themes or issues.
+
+#### Step 3: Explanation
+
+### Step 1: Data Creation
+
+```python
+import pandas as pd
+import numpy as np
+import random
+from collections import Counter
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import nltk
+
+# Ensuring necessary NLTK data is available
+nltk.download('punkt')
+nltk.download('stopwords')
+
+# Seed for reproducibility
+random.seed(42)
+
+# Generating random data
+customer_ids = range(1, 101)
+ratings = [random.randint(1, 5) for _ in customer_ids]
+comments = [
+    random.choice([
+        "Great service and friendly staff",
+        "Long wait times but good products",
+        "Excellent product range, will shop again",
+        "Not satisfied with the product quality",
+        "Found exactly what I was looking for, thanks!",
+        "Poor customer service experience",
+        "Checkout process was quick and easy",
+        "Will not return, very disappointed",
+        "Store was clean and well organized",
+        "High prices compared to other stores"
+    ]) for _ in customer_ids
+]
+
+# Creating a DataFrame
+feedback_df = pd.DataFrame({
+    'Customer ID': customer_ids,
+    'Rating': ratings,
+    'Comment': comments
+})
+
+feedback_df.head()
+
+  
+```
+We've successfully created a sample dataset with customer feedback. It consists of 100 entries, each with a unique customer ID, a rating from 1 to 5, and a comment about their shopping experience. The first five entries look like this:
+
+- Customer ID 1 rated 1 and commented, "Not satisfied with the product quality."
+- Customer ID 2 rated 1 and commented, "Store was clean and well organized."
+- Customer ID 3 rated 3 and commented, "Store was clean and well organized."
+- Customer ID 4 rated 2 and commented, "Found exactly what I was looking for, thanks!"
+- Customer ID 5 rated 2 and commented, "High prices compared to other stores."
+
+### Step 2: Analysis Function
+
+```python
+  
+  # Function to analyze customer feedback
+def analyze_customer_feedback(feedback_data):
+    # Step 1: Calculate the average rating
+    average_rating = feedback_data['Rating'].mean()
+    
+    # Step 2: Text analysis for common words in comments
+    # Concatenate all comments into a single text
+    all_comments = ' '.join(feedback_data['Comment'])
+    
+    # Tokenize the text into words
+    words = word_tokenize(all_comments)
+    
+    # Considering we couldn't download 
+  	# stopwords due to the environment limitation,
+    # we will proceed without removing them.
+    # In a typical scenario, we would remove stopwords here.
+    
+    # Count the frequency of each word
+    word_counts = Counter(words)
+    
+    # Identify the 5 most common words
+    common_words = word_counts.most_common(5)
+    
+    return average_rating, common_words
+
+# Analyze the feedback dataset
+average_rating, common_words = analyze_customer_feedback(feedback_df)
+
+average_rating, common_words
+
+  
+```
+
+1. Calculate the average customer rating.
+2. Identify the most common words in the comments, excluding common stopwords (e.g., "and", "the", "a"), to highlight themes in customer feedback.
+
+
+To proceed without relying on NLTK's tokenizer, we'll implement a simpler method for splitting the text into words. This approach will be less sophisticated and may not handle edge cases as well as NLTK's tokenizer, but it will allow us to continue with the text analysis. Let's revise the function to use basic string operations for splitting the text into words, and we'll manually filter out common punctuation marks to mimic a rudimentary tokenization process.
+
+The revised analysis of the customer feedback dataset, using a simplified text processing approach, yielded the following insights:
+
+- The average customer rating is approximately 2.77, suggesting a moderate level of overall customer satisfaction.
+- The five most common words in the comments are:
+  - "was" (34 occurrences)
+  - "and" (33 occurrences)
+  - "product" (21 occurrences)
+  - "not" (19 occurrences)
+  - "will" (18 occurrences)
+
+### Explanation of the Revised Function
+1. **Calculate Average Rating**: The function calculates the mean of the 'Rating' column in the dataset to determine the overall customer satisfaction level.
+2. **Simple Text Analysis**:
+   - All comments are concatenated into a single lowercase string to ensure consistent case for analysis.
+   - Common punctuation marks (., !, ?) are replaced with spaces to avoid them being counted as part of words.
+   - The text is then split into words based on spaces.
+   - A `Counter` is used to count the frequency of each word.
+   - The function identifies the five most common words, providing insight into recurring themes in the feedback.
+
+```python
+  
+  # Revised function to analyze customer 
+  # feedback without using NLTK's tokenizer
+def analyze_customer_feedback_simple(feedback_data):
+    # Step 1: Calculate the average rating
+    average_rating = feedback_data['Rating'].mean()
+    
+    # Step 2: Simple text analysis for common words in comments
+    # Concatenate all comments into a single text
+    all_comments = ' '.join(feedback_data['Comment']).lower()
+    
+    # Simple method to replace common punctuation with spaces
+    for char in ['.', ',', '!', '?']:
+        all_comments = all_comments.replace(char, ' ')
+    
+    # Split the text into words based on spaces
+    words = all_comments.split()
+    
+    # Count the frequency of each word
+    word_counts = Counter(words)
+    
+    # Identify the 5 most common words
+    common_words = word_counts.most_common(5)
+    
+    return average_rating, common_words
+
+# Analyze the feedback dataset using the revised function
+average_rating_simple, common_words_simple =  
+  analyze_customer_feedback_simple(feedback_df)
+
+average_rating_simple, common_words_simple
+
+  
+```
+This analysis, despite its simplicity, can offer valuable insights into customer feedback trends. The average rating indicates overall satisfaction, while the common words can hint at areas of concern or praise (e.g., frequent mentions of "product" suggest a focus on product-related feedback). However, for more nuanced insights, especially in identifying themes from customer comments, a more sophisticated text analysis involving natural language processing (NLP) techniques would be beneficial. This would ideally include filtering out stopwords, applying lemmatization or stemming, and using sentiment analysis to gauge the positive or negative tone of comments.  
   
   
   
+# 5. Use Case: Inventory Management System
+
+Imagine you are tasked with creating a simple inventory management system for a small business. The system needs to keep track of the products in stock, their quantities, and provide a way to update and query the inventory.
+
+#### Data:
+Every item will be assigned a unique identifier, a name, a category, and the quantity that is currently available.
+
+```python
+# Randomly generated data for inventory
+inventory_data = [
+    {'id': 101, 'name': 'Laptop', 'category': 'Electronics', 'quantity': 50},
+    {'id': 102, 'name': 'Notebook', 'category': 'Stationery', 'quantity': 100},
+    {'id': 103, 'name': 'Chair', 'category': 'Furniture', 'quantity': 20},
+    {'id': 104, 'name': 'Headphones', 'category': 'Electronics', 'quantity': 30},
+    {'id': 105, 'name': 'Pen', 'category': 'Stationery', 'quantity': 200},
+]
+```
+
+#### Functionality:
+This Python function that allows us to update the quantity of a product and query the current stock for a given product ID.
+
+```python
+def update_quantity(product_id, new_quantity):
+    """
+    Update the quantity of a product in the inventory.
+
+    Parameters:
+    - product_id (int): The unique ID of the product.
+    - new_quantity (int): The new quantity of the product.
+
+    Returns:
+    - None
+    """
+    for product in inventory_data:
+        if product['id'] == product_id:
+            product['quantity'] = new_quantity
+            print(f"Quantity for {product['name']} updated to {new_quantity}")
+            return
+    print("Product not found in the inventory")
+
+def query_inventory(product_id):
+    """
+    Query the current stock for a product in the inventory.
+
+    Parameters:
+    - product_id (int): The unique ID of the product.
+
+    Returns:
+    - int: The current quantity of the product.
+    """
+    for product in inventory_data:
+        if product['id'] == product_id:
+            return product['quantity']
+    print("Product not found in the inventory")
+    return None
+```
+
+#### Example Usage:
+
+```python
+# Example: Update quantity for product with ID 103
+update_quantity(103, 25)
+
+# Example: Query inventory for product with ID 103
+current_quantity = query_inventory(103)
+print(f"Current quantity for product with ID 103: {current_quantity}")
+```
+
+This example will update the quantity of the 'Chair' product to 25 and then query the inventory to retrieve the updated quantity.  
+  
+  
+# 6. Use Case: Student Grading System
+
+Consider a scenario where you are developing a simple student grading system for a school. The system should be able to store student information, including their names, subject scores, and calculate their average grades.
+
+#### Data:
+Each student will have a unique ID, a name, and scores in three subjects: Math, English, and Science.
+
+```python
+# Randomly generated data for students
+students_data = [
+    {'id': 201, 'name': 'Alice', 'math_score': 90, 'english_score': 85, 'science_score': 92},
+    {'id': 202, 'name': 'Bob', 'math_score': 78, 'english_score': 80, 'science_score': 88},
+    {'id': 203, 'name': 'Charlie', 'math_score': 95, 'english_score': 92, 'science_score': 89},
+    {'id': 204, 'name': 'David', 'math_score': 85, 'english_score': 88, 'science_score': 90},
+    {'id': 205, 'name': 'Eva', 'math_score': 88, 'english_score': 85, 'science_score': 94},
+]
+```
+
+**Functionality:**
+The average grade for a student is determined by this Python function, which takes into account the student's performance in the subjects of mathematics, English, and science.
+
+
+```python
+def calculate_average_grade(student_id):
+    """
+    Calculate the average grade for a student.
+
+    Parameters:
+    - student_id (int): The unique ID of the student.
+
+    Returns:
+    - float: The average grade for the student.
+    """
+    for student in students_data:
+        if student['id'] == student_id:
+            math_score = student['math_score']
+            english_score = student['english_score']
+            science_score = student['science_score']
+            average_grade = (math_score + english_score + science_score) / 3
+            return average_grade
+    print("Student not found in the system")
+    return None
+```
+
+**Example Usage:**
+Create a demonstration of how to use this function:
+
+
+```python
+# Example: Calculate average grade for student with ID 203
+average_grade = calculate_average_grade(203)
+print(f"Average grade for student with ID 203: {average_grade}")
+```
+  
+# 7. Use Case: Restaurant Recommendation System
+
+  A user is looking for a restaurant recommendation. They provide their preferences in terms of cuisine type, desired price range, and proximity (e.g., within 5 km of their current location).
+- Requirement: Create a Python function that randomly generates a restaurant recommendation based on the user's preferences.
+
+### Step 1: Define the Use Case Requirements
+- Input: User's preferences (cuisine type, price range, proximity).
+- Output: A randomly selected restaurant recommendation that matches these preferences.
+
+### Step 2: Structure the Data
+We'll assume we have a dataset of restaurants, each with attributes: name, cuisine type, price range, and location.
+
+### Step 3: Develop the Python Function
+Let's create a function `recommend_restaurant` that does the following:
+1. Accepts user preferences as input.
+2. Filters the dataset based on these preferences.
+3. Randomly selects one restaurant from the filtered list.
+4. Returns the name and details of the selected restaurant.
+
+```python
+  
+  import random
+
+# Example dataset of restaurants
+restaurants = [
+    {"name": "The Gourmet Hut", "cuisine": "Italian", "price": "Medium", "distance_km": 3},
+    {"name": "Sushi World", "cuisine": "Japanese", "price": "High", "distance_km": 5},
+    {"name": "Curry Palace", "cuisine": "Indian", "price": "Low", "distance_km": 2},
+    {"name": "Burger Town", "cuisine": "American", "price": "Low", "distance_km": 6},
+    {"name": "Café de Paris", "cuisine": "French", "price": "High", "distance_km": 4},
+    # ... more restaurants
+]
+
+def recommend_restaurant(cuisine, price, max_distance):
+    """
+    Recommends a restaurant based on the user's preferences.
+
+    Parameters:
+    cuisine (str): Desired cuisine type.
+    price (str): Desired price range (Low, Medium, High).
+    max_distance (int): Maximum distance in kilometers.
+
+    Returns:
+    dict: A restaurant that matches the preferences.
+    """
+    # Filter restaurants based on user preferences
+    filtered_restaurants = [
+        restaurant for restaurant in restaurants
+        if restaurant['cuisine'] == cuisine and 
+           restaurant['price'] == price and 
+           restaurant['distance_km'] <= max_distance
+    ]
+
+    # Randomly select a restaurant from the filtered list
+    if filtered_restaurants:
+        return random.choice(filtered_restaurants)
+    else:
+        return "No matching restaurants found."
+
+# Example use of the function
+recommend_restaurant("Italian", "Medium", 5)
+
+  
+  
+```
+
+### Function Explanation:
+
+The `recommend_restaurant` function works as follows:
+
+1. **Input Parameters**:
+   - `cuisine` (string): The type of cuisine the user prefers (e.g., Italian, Japanese, etc.).
+   - `price` (string): The desired price range (Low, Medium, High).
+   - `max_distance` (integer): The maximum distance in kilometers from the user's location.
+
+2. **Filtering Restaurants**:
+   - The function filters the list of restaurants based on the provided criteria. It creates a new list, `filtered_restaurants`, which includes only those restaurants matching the user's cuisine preference, price range, and within the specified distance.
+
+3. **Random Selection**:
+   - If the `filtered_restaurants` list is not empty, the function randomly selects a restaurant from this list using `random.choice(filtered_restaurants)`.
+   - If no restaurants match the criteria, it returns a message indicating that no matching restaurants were found.
+
+4. **Return Value**:
+   - The function returns the details of the randomly selected restaurant if a match is found, or a message if no match is found.
+
+In the given example, when we call `recommend_restaurant("Italian", "Medium", 5)`, it looks for Italian restaurants within 5 km with a medium price range. The function successfully finds "The Gourmet Hut" that matches these criteria and returns its details.  
   
   
   
+# 8. Use Case: Random Password Generator
+
+Create a Python function to generate a random password based on specified criteria, such as length and complexity.
+
+                                                   
+```python
+import random
+import string
+
+def generate_random_password(length=12, uppercase=True, lowercase=True, digits=True, special_chars=True):
+    """
+    Generate a random password based on specified criteria.
+
+    Parameters:
+    - length (int): Length of the password (default is 12).
+    - uppercase (bool): Include uppercase letters in the password (default is True).
+    - lowercase (bool): Include lowercase letters in the password (default is True).
+    - digits (bool): Include digits in the password (default is True).
+    - special_chars (bool): Include special characters in the password (default is True).
+
+    Returns:
+    - str: Randomly generated password.
+    """
+    characters = ""
+
+    if uppercase:
+        characters += string.ascii_uppercase
+    if lowercase:
+        characters += string.ascii_lowercase
+    if digits:
+        characters += string.digits
+    if special_chars:
+        characters += string.punctuation
+
+    if not any([uppercase, lowercase, digits, special_chars]):
+        raise ValueError("At least one character type should be included in the password.")
+
+    password = ''.join(random.choice(characters) for _ in range(length))
+    return password
+
+# Example usage:
+password = generate_random_password(length=16, uppercase=True, lowercase=True, digits=True, special_chars=True)
+print("Generated Password:", password)
+```
+
+Step-by-Step Explanation:
+
+1. **Import Libraries:**
+   - `import random`: To generate random values.
+   - `import string`: To get sets of ASCII characters (uppercase, lowercase, digits, and punctuation).
+
+2. **Function Definition:**
+   - `generate_random_password`: The main function that generates a random password based on specified criteria.
+
+3. **Function Parameters:**
+   - `length`: Length of the password (default is 12).
+   - `uppercase`: Include uppercase letters in the password (default is True).
+   - `lowercase`: Include lowercase letters in the password (default is True).
+   - `digits`: Include digits in the password (default is True).
+   - `special_chars`: Include special characters in the password (default is True).
+
+4. **Character Set Initialization:**
+   - `characters`: An empty string to store the characters based on the selected criteria.
+
+5. **Check Criteria and Build Character Set:**
+   - Check each criteria (uppercase, lowercase, digits, special_chars) and append the corresponding character set to `characters`.
+
+6. **Validation Check:**
+   - If none of the character types are selected, raise a `ValueError` indicating that at least one character type should be included.
+
+7. **Generate Password:**
+   - Use `random.choice` to randomly select characters from the combined character set to form the password.
+
+8. **Return Password:**
+   - Return the generated password as a string.
+
+9. **Example Usage:**
+   - Call the function with desired parameters (length, character types) and print the generated password.  
   
-  
-  
-  
-  
-  
-  
-  
-  
+                                                   
+# 9. Use Case: Crop Suggestion System
+A farmer wants to know which crop to plant based on soil type, average rainfall, and current season. Develop a Python function that randomly suggests a suitable crop based on these environmental factors.
+
+### Step 1: Define the Use Case Requirements
+- Input: Farmer's environmental conditions (soil type, average rainfall, current season).
+- Output: A randomly selected crop suggestion that matches these conditions.
+
+### Step 2: Structure the Data
+We'll assume we have a dataset of crops, each with preferred conditions: crop name, ideal soil type, ideal rainfall range, and suitable seasons.
+
+### Step 3: Develop the Python Function
+Let's create a function `suggest_crop` that does the following:
+1. Accepts the environmental conditions as input.
+2. Filters the dataset based on these conditions.
+3. Randomly selects one crop from the filtered list.
+4. Returns the name and details of the selected crop.
+
+I'll now write this function with a simulated dataset for demonstration purposes.
+
+### Function Explanation:
+
+The `suggest_crop` function operates in the following manner:
+
+1. **Input Parameters**:
+   - `soil` (string): The type of soil (e.g., Loamy, Clayey, Sandy Loam).
+   - `rainfall` (integer): The average annual rainfall in millimeters.
+   - `season` (string): The current season (e.g., Spring, Summer, Autumn, Winter).
+
+2. **Filtering Crops**:
+   - The function filters the list of crops based on the provided environmental conditions. It creates a new list, `filtered_crops`, which includes only those crops that match the user's soil type, fall within the rainfall range, and are suitable for the current season.
+
+3. **Random Selection**:
+   - If the `filtered_crops` list contains any crops, the function randomly selects a crop from this list using `random.choice(filtered_crops)`.
+   - If no crops match the criteria, it returns a message stating that no suitable crops were found for these conditions.
+
+4. **Return Value**:
+   - The function returns the details of the randomly selected crop if a match is found, or a message if no match is found.
+
+             
+```python
+             
+   # Example dataset of crops with their preferred conditions
+crops = [
+    {"name": "Wheat", "soil": "Loamy", "rainfall": (300, 600), "seasons": ["Winter", "Spring"]},
+    {"name": "Rice", "soil": "Clayey", "rainfall": (1500, 2500), "seasons": ["Summer"]},
+    {"name": "Corn", "soil": "Sandy Loam", "rainfall": (500, 800), "seasons": ["Summer", "Autumn"]},
+    {"name": "Potatoes", "soil": "Loamy", "rainfall": (450, 650), "seasons": ["Spring", "Autumn"]},
+    # ... more crops
+]
+
+def suggest_crop(soil, rainfall, season):
+    """
+    Suggests a crop based on the environmental conditions.
+
+    Parameters:
+    soil (str): Type of soil (e.g., Loamy, Clayey, Sandy Loam).
+    rainfall (int): Average annual rainfall in mm.
+    season (str): Current season (e.g., Spring, Summer, Autumn, Winter).
+
+    Returns:
+    dict or str: A crop that matches the conditions, or a message if no match is found.
+    """
+    # Filter crops based on environmental conditions
+    filtered_crops = [
+        crop for crop in crops
+        if crop['soil'] == soil and 
+           crop['rainfall'][0] <= rainfall <= crop['rainfall'][1] and 
+           season in crop['seasons']
+    ]
+
+    # Randomly select a crop from the filtered list
+    if filtered_crops:
+        return random.choice(filtered_crops)
+    else:
+        return "No suitable crops found for these conditions."
+
+# Example use of the function
+suggest_crop("Loamy", 500, "Spring")
+          
+             
+```             
+When we run the function `suggest_crop("Loamy", 500, "Spring")` in the example that has been supplied, it searches for crops that are suited for loamy soil, have an annual rainfall need that falls between 300 and 600 millimeters, and may be planted during the spring season. The function determines if "Wheat" is an appropriate crop that meets these requirements and then provides the specifics of that crop.  
+                                                 
+                                                   

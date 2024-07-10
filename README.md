@@ -1,5 +1,5 @@
 <div align="center">
-      <h2> <img src="http://bytesofintelligences.com/wp-content/uploads/2023/03/Exploring-AIs-Secrets-1.png" width="300px"><br/> Fundamental Concepts and Architectures of Neural Network </h2>
+      <h2> <img src="http://bytesofintelligences.com/wp-content/uploads/2023/03/Exploring-AIs-Secrets-1.png" width="300px"><br/> 50 Real World Use Case Based Python Function Practics </h2>
      </div>
 
 <body>

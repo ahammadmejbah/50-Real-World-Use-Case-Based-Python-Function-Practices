@@ -363,28 +363,33 @@ The `analyze_feedback_data` function has processed the generated customer feedba
 
 ```python
 
-def analyze_feedback_data(feedback_df):
-    # Convert 'Date' to datetime for easier analysis
-    feedback_df['Date'] = pd.to_datetime(feedback_df['Date'])
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
 
-    # Calculate average ratings
-    avg_ratings = feedback_df[['Food Quality Rating',
-    'Service Rating', 'Ambiance Rating',
-    'Overall Rating']].mean()
+def generate_feedback_data(num_entries=500):
+    # Seed for reproducibility
+    np.random.seed(0)
 
-    # Trends Analysis
-    # Group by month and compute average ratings per month to identify trends
-    feedback_df['Month'] = feedback_df['Date'].dt.to_period('M')
-    monthly_avg_ratings = feedback_df.groupby('Month')
-    [['Food Quality Rating', 'Service Rating', 
-    'Ambiance Rating', 'Overall Rating']].mean()
+    # Generating dates for the past 'num_entries' days
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=num_entries)
+    dates = pd.date_range(start=start_date, end=end_date, freq='D')
 
-    return avg_ratings, monthly_avg_ratings
+    # Random feedback data
+    data = {
+        'Date': np.random.choice(dates, num_entries),
+        # Ratings between 1 and 5
+        'Food Quality Rating': np.random.randint(1, 6, num_entries),  
+        'Service Rating': np.random.randint(1, 6, num_entries),
+        'Ambiance Rating': np.random.randint(1, 6, num_entries),
+        'Overall Rating': np.random.randint(1, 6, num_entries)
+    }
 
-# Analyze the generated feedback data
-avg_ratings, monthly_avg_ratings = analyze_feedback_data(feedback_data)
-# Display the analysis results
-(avg_ratings, monthly_avg_ratings.head())  
+    # Create DataFrame
+    feedback_df = pd.DataFrame(data)
+
+    return feedback_df
 
 
 ```
@@ -467,34 +472,37 @@ We've successfully created a sample dataset with customer feedback. It consists 
 ```python
   
   # Function to analyze customer feedback
-def analyze_customer_feedback(feedback_data):
-    # Step 1: Calculate the average rating
-    average_rating = feedback_data['Rating'].mean()
-    
-    # Step 2: Text analysis for common words in comments
-    # Concatenate all comments into a single text
-    all_comments = ' '.join(feedback_data['Comment'])
-    
-    # Tokenize the text into words
-    words = word_tokenize(all_comments)
-    
-    # Considering we couldn't download 
-  	# stopwords due to the environment limitation,
-    # we will proceed without removing them.
-    # In a typical scenario, we would remove stopwords here.
-    
-    # Count the frequency of each word
-    word_counts = Counter(words)
-    
-    # Identify the 5 most common words
-    common_words = word_counts.most_common(5)
-    
-    return average_rating, common_words
+def analyze_feedback_data(feedback_df):
+    # Convert 'Date' to datetime for easier analysis
+    feedback_df['Date'] = pd.to_datetime(feedback_df['Date'])
 
-# Analyze the feedback dataset
-average_rating, common_words = analyze_customer_feedback(feedback_df)
+    # Calculate average ratings
+    avg_ratings = feedback_df[['Food Quality Rating',
+                               'Service Rating', 
+                               'Ambiance Rating',
+                               'Overall Rating']].mean()
 
-average_rating, common_words
+    # Trends Analysis
+    # Group by month and compute average ratings per month to identify trends
+    feedback_df['Month'] = feedback_df['Date'].dt.to_period('M')
+    monthly_avg_ratings = feedback_df.groupby('Month')[['Food Quality Rating', 
+                                                        'Service Rating', 
+                                                        'Ambiance Rating', 
+                                                        'Overall Rating']].mean()
+
+    return avg_ratings, monthly_avg_ratings
+
+# Generate the feedback data
+feedback_df = generate_feedback_data()
+
+# Analyze the generated feedback data
+avg_ratings, monthly_avg_ratings = analyze_feedback_data(feedback_df)
+
+# Display the analysis results
+print("Average Ratings:")
+print(avg_ratings)
+print("\nMonthly Average Ratings:")
+print(monthly_avg_ratings.head())
 
   
 ```
